@@ -1,0 +1,30 @@
+# build
+dist
+
+# node modules
+node_modules
+
+# lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# env
+.env
+.env.dev
+
+
+# test
+coverage
+
+
+#idea
+.idea
+.vscode
+
+
+# logs
+logs
+
+#temp storage
+temp
