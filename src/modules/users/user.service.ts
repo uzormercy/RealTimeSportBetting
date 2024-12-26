@@ -1,17 +1,19 @@
-import { generateToken, hashPassword, verifyPassword } from '../../shared/utils/helpers';
+import { generateToken, hashPassword, IRespond, respond, verifyPassword } from '../../shared/utils/helpers';
 import { ICreateUser, IUser } from './interface';
 import { UserModel } from './user.model';
 import { createUserValidationSchema } from './validation';
 import { v4 as uuid } from 'uuid';
 
-export const createUser = async (userDto: ICreateUser): Promise<Omit<IUser, 'password'>> => {
+export const createUser = async (userDto: ICreateUser): Promise<IRespond> => {
   const validation = createUserValidationSchema.safeParse(userDto);
   if (!validation.success) {
-    throw new Error(validation.error.issues[0].message);
+    return respond(false, {
+      message: validation.error.issues[0].message,
+    });
   }
   const userExist = await getUserByEmail(userDto.email);
   if (userExist) {
-    throw new Error('User with email already exists');
+    return respond(false, { message: 'User with email already exists' });
   }
   const encryptPassword = hashPassword(userDto.password);
   const user: Partial<IUser> = {
@@ -21,13 +23,13 @@ export const createUser = async (userDto: ICreateUser): Promise<Omit<IUser, 'pas
   };
   const createUser = new UserModel(user);
   createUser.save();
-  return {
+  return respond(true, {
     _id: createUser._id,
     name: createUser.name,
     email: createUser.email,
     createdAt: createUser.createdAt,
     updatedAt: createUser.updatedAt,
-  };
+  });
 };
 
 export const getUserByEmail = async (email: string): Promise<IUser | null> => {

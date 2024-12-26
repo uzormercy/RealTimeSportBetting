@@ -25,3 +25,13 @@ export const verifyToken = async (token: string) => verifyJWTToken(token);
 export const generateToken = (payload: any) => {
   return jwt.sign(payload, TOKEN_KEY, { expiresIn: '1h' });
 };
+
+export interface IRespond {
+  isSuccess: boolean;
+  data: Record<string, any>;
+}
+
+export const respond = (isSuccess: boolean, data: Record<string, any>): IRespond => ({
+  isSuccess,
+  data,
+});
